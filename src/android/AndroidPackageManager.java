@@ -140,7 +140,6 @@ public class AndroidPackageManager extends CordovaPlugin {
 
 					md.update(packageInfo.signatures[0].toByteArray());
 					shaSignature = byteToHexString(md.digest());
-					Log.e("hash key", shaSignature);
 
 					jo.put("signature", shaSignature);
 				}

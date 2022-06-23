@@ -51,7 +51,7 @@ public class AndroidPackageManager extends CordovaPlugin {
 				if(args.length() >= 2) {
 					String[] flags = new String[args.length() - 1];
 					for(int index = 1; index < args.length(); index++)
-						flags[index] = args.getString(index);
+						flags[index - 1] = args.getString(index);
 					resultList.addAll(getPackageInfo(pm, args.getString(0), flags));
 				}
                 break;

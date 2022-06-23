@@ -8,8 +8,8 @@ exports.getInstalledPackages = function(success, error) {
     exec(success, error, 'AndroidPackageManager', 'getInstalledPackages', []);
 };
 
-exports.getPackageInfo = function(success, error, flag) {
-    exec(success, error, 'AndroidPackageManager', 'getPackageInfo', [flag]);
+exports.getPackageInfo = function(packageName, flags, success, error) {
+    exec(success, error, 'AndroidPackageManager', 'getPackageInfo', [packageName, flags]);
 };
 
 exports.queryIntentActivities = function(success, error) {

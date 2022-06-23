@@ -13,12 +13,17 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageInfo;
 import android.content.pm.ResolveInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.Signature;
 import android.os.Build;
+import android.util.Base64;
 import android.util.Log;
 
 import org.apache.cordova.PluginResult;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AndroidPackageManager extends CordovaPlugin {
@@ -43,7 +48,12 @@ public class AndroidPackageManager extends CordovaPlugin {
                 break;
 
             case "getPackageInfo":
-                resultList.addAll(getPackageInfo(pm, args));
+				if(args.length() >= 2) {
+					String[] flags = new String[args.length() - 1];
+					for(int index = 1; index < args.length(); index++)
+						flags[index] = args.getString(index);
+					resultList.addAll(getPackageInfo(pm, args.getString(0), flags));
+				}
                 break;
 
             case "queryIntentActivities":
@@ -88,43 +98,69 @@ public class AndroidPackageManager extends CordovaPlugin {
         return appList;
     }
 
-    private static List<JSONObject> getPackageInfo(PackageManager pm, JSONArray args) throws JSONException {
+    private static List<JSONObject> getPackageInfo(PackageManager pm, String packageName, String[] flags) throws JSONException {
         ArrayList<JSONObject> pkgList = new ArrayList<JSONObject>();
 
-        int flags = 0;
-        if (args != null && args.length() == 2) {
-            JSONArray flagsArr = args.getJSONArray(1);
-            for (int ii = 0; ii < flagsArr.length(); ii++) {
-                switch(flagsArr.getString(ii)) {
+        int flagValues = 0;
+        if (
+			packageName != null && packageName.trim().length() > 0
+			&& flags != null && flags.length > 0
+		) {
+            for (String flag: flags) {
+                switch(flag) {
                     case "GET_META_DATA":
-                        flags = flags | PackageManager.GET_META_DATA;
+						flagValues = flagValues | PackageManager.GET_META_DATA;
                         break;
 
                     case "MATCH_SYSTEM_ONLY":
-                        flags = flags | PackageManager.MATCH_SYSTEM_ONLY;
+						flagValues = flagValues | PackageManager.MATCH_SYSTEM_ONLY;
                         break;
 
                     case "GET_GIDS":
-                        flags = flags | PackageManager.GET_GIDS;
+						flagValues = flagValues | PackageManager.GET_GIDS;
                         break;
 
 					case "GET_SIGNATURES":
-                        flags = flags | PackageManager.GET_SIGNATURES;
+						flagValues = flagValues | PackageManager.GET_SIGNATURES;
                         break;
                 }
             }
         }
 
         try {
-            PackageInfo pi = pm.getPackageInfo(args.getString(0), flags);
-            JSONObject jo = packageInfoToJson(pm, pi);
+            PackageInfo packageInfo = pm.getPackageInfo(packageName, flagValues);
+            JSONObject jo = packageInfoToJson(pm, packageInfo);
+			if((flagValues & PackageManager.GET_SIGNATURES) > 0) {
+
+				if(packageInfo.signatures.length > 0) {
+					String shaSignature = null;
+
+					MessageDigest md;
+					md = MessageDigest.getInstance("SHA1");
+
+					md.update(packageInfo.signatures[0].toByteArray());
+					shaSignature = byteToHexString(md.digest());
+					Log.e("hash key", shaSignature);
+
+					jo.put("signature", shaSignature);
+				}
+			}
             pkgList.add(jo);
-        } catch (NameNotFoundException ex) {
+        } catch (NameNotFoundException | NoSuchAlgorithmException ex) {
             Log.e(LOGTAG, ex.toString());
         }
 
         return pkgList;
     }
+
+	//byte 배열을 16진수 String으로 변환
+	public static String byteToHexString(byte[] byteArray) {
+		StringBuffer sb = new StringBuffer(byteArray.length * 2);
+		for(byte b : byteArray) {
+			sb.append(String.format("%02x", b).toUpperCase());
+		}
+		return sb.toString();
+	}
 
     private static List<JSONObject> queryIntentActivities(PackageManager pm) throws JSONException {
         ArrayList<JSONObject> pkgList = new ArrayList<JSONObject>();

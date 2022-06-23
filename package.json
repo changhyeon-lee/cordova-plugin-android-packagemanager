@@ -1,0 +1,25 @@
+{
+  "name": "cordova-plugin-android-packagemanager",
+  "version": "0.0.1",
+  "description": "Cordova plugin for Android package manager.",
+  "cordova": {
+    "id": "cordova-plugin-android-packagemanager",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/changhyeon-lee/cordova-plugin-android-packagemanager.git"
+  },
+  "keywords": [
+    "cordova",
+    "packagemanager",
+    "cordova-android",
+	  "Installed-package",
+    "package-Info",
+    "Apps-Info"
+  ],
+  "author": "Citadel Group (based on fork from Fernando Arce)",
+  "license": "Apache-2.0"
+}

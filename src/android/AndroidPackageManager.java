@@ -23,7 +23,6 @@ import java.util.List;
 
 public class AndroidPackageManager extends CordovaPlugin {
 
-    private static final boolean IS_AT_LEAST_LOLLIPOP = Build.VERSION.SDK_INT >= 21;
     private static final String LOGTAG = "cordovaPluginAndroidPackageManager";
     public boolean instApp = false;
 

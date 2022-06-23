@@ -1,4 +1,4 @@
-package au.com.citadelgroup.android;
+package com.morethani.android;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
@@ -48,7 +48,7 @@ public class packagemanager extends CordovaPlugin {
                 break;
 
             case "queryIntentActivities":
-                resultList.addAll(queryIntentActivities(pm, args));
+                resultList.addAll(queryIntentActivities(pm));
                 break;
 
             case "finishAndRemoveTask":
@@ -131,7 +131,7 @@ public class packagemanager extends CordovaPlugin {
         return pkgList;
     }
 
-    private static List<JSONObject> queryIntentActivities(PackageManager pm, JSONArray args) throws JSONException {
+    private static List<JSONObject> queryIntentActivities(PackageManager pm) throws JSONException {
         ArrayList<JSONObject> pkgList = new ArrayList<JSONObject>();
         Intent intent = new Intent(Intent.ACTION_MAIN, null);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);

@@ -30,7 +30,7 @@ public class AndroidPackageManager extends CordovaPlugin {
     @Override
     public boolean execute(String action, JSONArray args, final CallbackContext callbackContext) throws JSONException {
 
-        final Context context = IS_AT_LEAST_LOLLIPOP ? cordova.getActivity().getWindow().getContext() : cordova.getActivity().getApplicationContext();
+		final Context context = cordova.getContext();
         final PackageManager pm = context.getPackageManager();
 
         ArrayList<JSONObject> resultList = new ArrayList<JSONObject>();
@@ -49,10 +49,6 @@ public class AndroidPackageManager extends CordovaPlugin {
 
             case "queryIntentActivities":
                 resultList.addAll(queryIntentActivities(pm));
-                break;
-
-            case "finishAndRemoveTask":
-                this.cordova.getActivity().finishAndRemoveTask();
                 break;
 
             default:
